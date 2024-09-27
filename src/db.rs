@@ -23,8 +23,11 @@ impl Display for DbError {
 }
 
 pub fn create_laptime(conn: &Connection<AutocommitOn>, lap: &LapTime) -> DbResult<()> {
-    let stmt = Statement::with_parent(&conn).map_err(|e| DbError::Internal(e.to_string()))?;
-    let sql = format!("insert into tbZeit (LfdNr,Kennung,Zeit) values ('{}','{}','{}')", lap.seq_number, lap.channel, lap.time);
+    let stmt = Statement::with_parent(conn).map_err(|e| DbError::Internal(e.to_string()))?;
+    let sql = format!(
+        "insert into tbZeit (LfdNr,Kennung,Zeit) values ('{}','{}','{}')",
+        lap.seq_number, lap.channel, lap.time
+    );
 
     match stmt.exec_direct(&sql) {
         Ok(ResultSetState::NoData(_)) => Ok(()),
@@ -36,7 +39,7 @@ pub fn update_lap<T>(conn: &Connection<T>, id: usize, lap: &LapTime) -> DbResult
 where
     T: AutocommitMode,
 {
-    let stmt = Statement::with_parent(&conn).map_err(|e| DbError::Internal(e.to_string()))?;
+    let stmt = Statement::with_parent(conn).map_err(|e| DbError::Internal(e.to_string()))?;
     let sql = format!(
         "update tbZeit set Zeit = '{}', LfdNr = {}, Kennung = '{}' where ID = {}",
         lap.time, lap.seq_number, lap.channel, id
@@ -50,7 +53,7 @@ where
 }
 
 pub fn fetch_id(conn: &Connection<AutocommitOn>) -> Result<usize, DbError> {
-    let stmt = Statement::with_parent(&conn).map_err(|e| DbError::Internal(e.to_string()))?;
+    let stmt = Statement::with_parent(conn).map_err(|e| DbError::Internal(e.to_string()))?;
     let sql: String =
         "select top 1 ID from tbZeit where Nr is not null and Zeit is null order by ID asc".into();
     const ID_INDEX: u16 = 1;

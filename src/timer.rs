@@ -21,12 +21,13 @@ impl Display for Channel {
     }
 }
 
-impl Into<&str> for Channel {
-    fn into(self) -> &'static str {
-        match self {
-            Channel::A => "A",
-            Channel::B => "B",
-            Channel::C => "C",
+impl From<&str> for Channel {
+    fn from(value: &str) -> Self {
+        match value {
+            "A" => Self::A,
+            "B" => Self::B,
+            "C" => Self::C,
+            _ => Self::A,
         }
     }
 }
@@ -64,7 +65,7 @@ impl Display for LapTime {
 impl From<String> for LapTime {
     fn from(value: String) -> Self {
         info!("RAW: \"{}\"", &value.trim());
-        let mut chunks = value.trim().split_whitespace();
+        let mut chunks = value.split_whitespace();
         let seq_number = chunks
             .next()
             .expect("Invalid timestamp")
